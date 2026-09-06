@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Fox extends Animal {
+public class Fox extends Animal implements Move {
 
     public Fox(Cell cell) {
         super(cell);
@@ -27,6 +27,25 @@ public class Fox extends Animal {
         display.add(ear2);
     }
 
+// move interface
+    // if rabbit is in vicinity of fox, it will chase the rabbit??? probably not
+    @Override
+    public void move(Cell target) {
     
+        int dirX = target.x - cell.x;
+        int dirY = target.y - cell.y;
+
+        // move the graphics
+        for(Polygon p : display) {
+        for(int i = 0; i < p.npoints; i++) {
+            p.xpoints[i] += dirX;
+            p.ypoints[i] += dirY;
+        }
+        p.invalidate();
+        }
+
+        // update the cell reference
+        cell = target;
+    }
     
 }

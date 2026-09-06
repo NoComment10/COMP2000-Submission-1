@@ -33,4 +33,21 @@ public class Simulation {
         }
     }
 
+
+//move animals 
+
+
+
+    // check if the target cell is a neighbor of the animal's current cell and valid
+    private boolean isNeighbor(Cell target) {
+        int dx = target.col - cell.col;
+        int dy = target.row - cell.row;
+        return (dx <= 1 && dy <= 1) && (dx + dy != 0);
+    }
+
+    //move logic
+    
+    //eventually
+    //Animal.move(Cell target)
+
 }

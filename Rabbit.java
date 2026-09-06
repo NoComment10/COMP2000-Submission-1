@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Rabbit extends Animal {
+public class Rabbit extends Animal implements Move {
 
     public Rabbit(Cell cell) {
         super(cell);
@@ -27,6 +27,23 @@ public class Rabbit extends Animal {
         display.add(face);
         display.add(ear1);
         display.add(ear2);
+    }
+
+// move interface
+    // rabbit will randomly move to a cell that is not occupied by another rabbit
+    @Override
+    public void move(Cell target) {
+        
+        int dirX = target.x - cell.x;
+        int dirY = target.y - cell.y;
+        for(Polygon p : display) {
+        for(int i = 0; i < p.npoints; i++) {
+            p.xpoints[i] += dirX;
+            p.ypoints[i] += dirY;
+        }
+        p.invalidate();
+        }
+        cell = target;
     }
 
 }
