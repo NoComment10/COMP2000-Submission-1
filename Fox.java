@@ -48,8 +48,7 @@ public class Fox extends Animal implements Move, Eat {
         cell = target;
     }
 
-
-
+// eat interface
     // fox eats rabbit
     // Simulation will call this method to check if the fox can eat the object
     @Override
@@ -57,4 +56,9 @@ public class Fox extends Animal implements Move, Eat {
         return food instanceof Rabbit;
     }
     
+    // reproduce
+    @Override
+    public Animal reproduce(Cell cell) {
+        return new Fox(cell);
+    }
 }

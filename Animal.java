@@ -23,5 +23,6 @@ public abstract class Animal {
         }
     }
 
+    public abstract Animal reproduce(Cell cell);
 
 }

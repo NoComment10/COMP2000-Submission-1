@@ -54,4 +54,10 @@ public class Rabbit extends Animal implements Move, Eat {
         return false;
     }
 
+    // reproduce
+    @Override
+    public Animal reproduce(Cell cell) {
+        return new Fox(cell);
+    }
+
 }
