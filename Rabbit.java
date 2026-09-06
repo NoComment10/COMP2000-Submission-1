@@ -51,7 +51,7 @@ public class Rabbit extends Animal implements Move, Eat {
     // Simulation will call this method to check if the rabbit can eat the object
     @Override
     public boolean canEat(Object food) {
-        return false;
+        return food instanceof Lettuce;
     }
 
     // reproduce

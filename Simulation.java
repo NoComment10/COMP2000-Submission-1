@@ -4,7 +4,8 @@ import java.util.List;
 
 public class Simulation {
     Grid grid;
-    List<Animal> animals;
+    EntityList<Animal> animals;
+    EntityList<Lettuce> lettuce;
     Cell cell;
 
     // add animals and plants to the stage
@@ -14,14 +15,14 @@ public class Simulation {
 
     public Simulation(){
         grid = new Grid();
-
-        animals = new ArrayList<Animal>();
+        lettuce = new EntityList<Lettuce>();
+        animals = new EntityList<Animal>();
 
         // intial addition of animals and plants to the stage
             // for example -> nothing concrete yet
         animals.add(new Rabbit(grid.cells[0][0]));
         animals.add(new Fox(grid.cells[12][13]));
-
+        lettuce.add(new Lettuce(grid.cells[5][5]));
 
     }
 
