@@ -24,32 +24,65 @@ public class Simulation {
         animals.add(new Fox(grid.cells[12][13]));
         lettuce.add(new Lettuce(grid.cells[5][5]));
 
+        moveAnimal(animals.get(1));
     }
 
 
     public void paint(Graphics g) {
         grid.paint(g);
-        for (Animal animal : animals) {
-            animal.paint(g);
+        for (int i = 0; i < animals.size(); i++) {
+            animals.get(i).paint(g);
+        }
+        for (int i = 0; i < lettuce.size(); i++) {
+            lettuce.get(i).paint(g);
         }
     }
 
 
-//move animals 
+// move animals logic
+
+    public void moveAnimal(Animal animal) {
+        List<Cell> possibleMoves = getNeighbors(animal.cell);
+
+
+        // if statement for all the targetted movement toward food
 
 
 
-    // check if the target cell is a neighbor of the animal's current cell and valid
-    private boolean isNeighbor(Cell target) {
-        int dx = target.col - cell.col;
-        int dy = target.row - cell.row;
-        return (dx <= 1 && dy <= 1) && (dx + dy != 0);
+
+        //the random movement will be part of the else statement if there is no food in the neighboring cells
+        // random movement to a neighboring cell that is not occupied by another animal
+        int randomCellIndex = (int) (Math.random() * possibleMoves.size());
+        Cell targetCell = possibleMoves.get(randomCellIndex);
+        animal.move(targetCell);
+        System.out.println("random cell is " + targetCell.col + ", " + targetCell.row);
     }
 
-    //move logic
-    
-    //eventually
-    //Animal.move(Cell target)
+
+    // get neighbors of the animal's current cell
+    private List<Cell> getNeighbors(Cell current) {
+
+        List<Cell> neighbors = new ArrayList<>();
+        
+        for(int col = current.col - 1; col <= current.col + 1; col++) {
+            for(int row = current.row - 1; row <= current.row + 1; row++) {
+
+                // Skip the current cell
+                if(col == current.col && row == current.row) {
+                    continue;
+                }
+
+                // make sure the neighbor is within the grid bounds
+                if(col >= 0 && col < grid.cells.length && 
+                    row >= 0 && row < grid.cells[col].length) {
+
+                    neighbors.add(grid.cells[col][row]);
+                }
+            }
+        }
+        return neighbors;
+    }
+
 
     public void reproduce(Animal animal) {
         // add new animal to stage 

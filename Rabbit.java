@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Rabbit extends Animal implements Move, Eat {
+public class Rabbit extends Animal implements Eat {
 
     public Rabbit(Cell cell) {
         super(cell);
@@ -57,7 +57,7 @@ public class Rabbit extends Animal implements Move, Eat {
     // reproduce
     @Override
     public Animal reproduce(Cell cell) {
-        return new Fox(cell);
+        return new Rabbit(cell);
     }
 
 }

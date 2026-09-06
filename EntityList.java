@@ -17,8 +17,8 @@ public class EntityList<T> {
         items.remove(item);
     }
 
-    public List<T> getItems() {
-        return items;
+    public T get(int index) {
+        return items.get(index);
     }
 
     public int size() {

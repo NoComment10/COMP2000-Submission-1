@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Fox extends Animal implements Move, Eat {
+public class Fox extends Animal implements Eat {
 
     public Fox(Cell cell) {
         super(cell);
@@ -28,7 +28,6 @@ public class Fox extends Animal implements Move, Eat {
     }
 
 // move interface
-    // if rabbit is in vicinity of fox, it will chase the rabbit??? probably not
     @Override
     public void move(Cell target) {
     

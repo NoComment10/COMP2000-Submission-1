@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.List;
 
-public abstract class Animal {
+public abstract class Animal implements Move {
     Color color;
     List<Polygon> display;
     Cell cell;
