@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Fox extends Animal implements Move {
+public class Fox extends Animal implements Move, Eat {
 
     public Fox(Cell cell) {
         super(cell);
@@ -46,6 +46,15 @@ public class Fox extends Animal implements Move {
 
         // update the cell reference
         cell = target;
+    }
+
+
+
+    // fox eats rabbit
+    // Simulation will call this method to check if the fox can eat the object
+    @Override
+    public boolean canEat(Object food) {
+        return food instanceof Rabbit;
     }
     
 }

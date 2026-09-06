@@ -50,4 +50,15 @@ public class Simulation {
     //eventually
     //Animal.move(Cell target)
 
+
+
+
+    public void eat(Animal animal, Object food) {
+        // remove food from stage
+        // when animal moves on eating turn, leaves behind new animal in old cell
+    }
+
+    public void death(Animal animal) {
+        // remove animal from stage
+    }
 }
