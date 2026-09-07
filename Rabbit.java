@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
 
-public class Rabbit extends Animal implements Eat {
+public class Rabbit extends Animal {
 
     public Rabbit(Cell cell) {
         super(cell);
