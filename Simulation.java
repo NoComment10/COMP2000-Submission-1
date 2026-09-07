@@ -2,11 +2,16 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Simulation {
     Grid grid;
-    EntityList<Animal> animals;
-    EntityList<Lettuce> lettuce;
     Cell cell;
+    EntityList<Animal> animals;
+    EntityList<Lettuce> lettuce;  
+    
+    // lettuce information
+    int lettuceGrowthRate = 3; // number of turns it takes to grow
+    int turnsSinceLastLettuceGrowth = 0;
 
     // add animals and plants to the stage
     // controls reproduction and movement of animals and plants
@@ -25,9 +30,6 @@ public class Simulation {
 
         animals.add(new Rabbit(grid.cells[7][2]));
         lettuce.add(new Lettuce(grid.cells[4][4]));
-
-        moveAnimal(animals.get(2));
-        moveAnimal(animals.get(2));
         
     }
 
@@ -96,6 +98,7 @@ public class Simulation {
             System.out.println("random cell is " + targetCell.col + ", " + targetCell.row);
         }
 
+        // checks for starvation and removes animal from stage when dead
         checkForDeath(animal);
         
     }
@@ -171,6 +174,63 @@ public class Simulation {
         return null;
     }
 
+//plant growth logic
+    public void growLettuce() {
+
+        boolean gridFull = true;
+
+        // check if there is at least one empty cell in the grid
+        for(int col = 0; col < grid.cells.length; col++) {
+            for(int row = 0; row < grid.cells[col].length; row++) {
+                Cell cell = grid.cells[col][row];
+
+                // check if the cell is occupied
+                boolean cellOccupied = isCellOccupied(cell);
+
+                // if the cell is not occupied, add new lettuce to that cell
+                if(!cellOccupied) {
+                    gridFull = false;
+                    break;
+                }
+            }
+        }
+
+        while(!gridFull) {
+
+            // randomly select a cell in the grid
+            int col = (int) (Math.random() * grid.cells.length);
+            int row = (int) (Math.random() * grid.cells[col].length);
+            Cell cell = grid.cells[col][row];
+
+            // check if cell is occupied
+            boolean cellOccupied = isCellOccupied(cell);
+
+            // if the cell is not occupied, add new lettuce to that cell
+            if(!cellOccupied) {
+                lettuce.add(new Lettuce(cell));
+                turnsSinceLastLettuceGrowth = 0;
+                return;
+            }
+        }
+    }
+
+    private boolean isCellOccupied(Cell cell) {
+
+        for(int i = 0; i < lettuce.size(); i++) {
+            if(lettuce.get(i).cell == cell) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < animals.size(); i++) {
+            if(animals.get(i).cell == cell) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // check if there is food in neighboring cells
         // if there is food, move towards that cell
     public Cell detectFood(Animal animal) {
@@ -218,7 +278,10 @@ public class Simulation {
                 System.out.println(animal + " ate lettuce at " + ((Lettuce) food).cell.col + ", " + ((Lettuce) food).cell.row);
             
             } else if(food instanceof Animal) {
-                animals.remove((Animal) food);
+
+                Animal prey = (Animal) food;
+                prey.isAlive = false;
+                // animals.remove((Animal) food);
 
                 // reset moves without food since animal has eaten
                 animal.movesWithoutFood = 0;
@@ -260,7 +323,7 @@ public class Simulation {
     }
 
 
-    //helper to see if partner exists 
+    // helper to see if partner exists 
     public Animal checkForPartner(Animal animal) {
 
         for(int i = 0; i < animals.size(); i++) {
@@ -270,24 +333,45 @@ public class Simulation {
             if(animal != animal2 && 
                 animal.cell == animal2.cell &&
                 animal.getClass() == animal2.getClass() &&
-                animal.movesSinceReproduction >= 5 && 
-                animal2.movesSinceReproduction >= 5) {
+                animal.movesSinceReproduction >= animal.reproductionThreshold &&
+                animal2.movesSinceReproduction >= animal2.reproductionThreshold){
 
                 return animal2;
-            }
+            }     
         }
         return null;
     }
 
         
 // death logic
-
     public void checkForDeath(Animal animal) {
         // remove animal from stage
         if(animal.movesWithoutFood >= 10) {
             
             System.out.println(animal + " died of starvation at " + animal.cell.col + ", " + animal.cell.row);
-            animals.remove(animal);
+            animal.isAlive = false;
+            // animals.remove(animal);
         }
+    }
+
+    public void removeDeadAnimals() {
+        for(int i = 0; i < animals.size(); i++) {
+            Animal animal = animals.get(i);
+            if(!animal.isAlive) {
+                animals.remove(animal);
+                i--; // adjust index after removal
+            }
+        }
+    }
+
+
+// one full turn
+    public void runTurn() {
+
+        // movement logic
+
+
+        removeDeadAnimals();
+  
     }
 }

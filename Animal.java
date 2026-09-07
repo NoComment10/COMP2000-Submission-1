@@ -9,6 +9,8 @@ public abstract class Animal implements Move, Eat {
     Cell cell;
     int movesWithoutFood = 0;
     int movesSinceReproduction = 0;
+    int reproductionThreshold;
+    boolean isAlive = true;
 
     public Animal(Cell cell) {
         this.cell = cell;

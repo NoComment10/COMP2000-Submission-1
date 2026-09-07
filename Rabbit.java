@@ -7,6 +7,8 @@ public class Rabbit extends Animal {
     public Rabbit(Cell cell) {
         super(cell);
 
+        reproductionThreshold = 3;
+
         color = Color.PINK;
         display = new ArrayList<Polygon>();
         Polygon ear1 = new Polygon();

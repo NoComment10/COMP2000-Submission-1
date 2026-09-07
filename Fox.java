@@ -7,6 +7,8 @@ public class Fox extends Animal {
     public Fox(Cell cell) {
         super(cell);
 
+        reproductionThreshold = 8;
+
         color = Color.ORANGE;
         display = new ArrayList<Polygon>();
         Polygon ear1 = new Polygon();
