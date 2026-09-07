@@ -23,13 +23,12 @@ public class Simulation {
         animals.add(new Rabbit(grid.cells[2][2]));
         animals.add(new Fox(grid.cells[12][12]));
 
-        animals.add(new Rabbit(grid.cells[2][2]));
+        animals.add(new Rabbit(grid.cells[7][2]));
         lettuce.add(new Lettuce(grid.cells[4][4]));
 
-        moveAnimal(animals.get(0));
-
+        moveAnimal(animals.get(2));
+        moveAnimal(animals.get(2));
         
-
     }
 
 
@@ -97,7 +96,7 @@ public class Simulation {
             System.out.println("random cell is " + targetCell.col + ", " + targetCell.row);
         }
 
-        
+        checkForDeath(animal);
         
     }
 
@@ -150,6 +149,7 @@ public class Simulation {
         
         return Math.max(dx, dy);
     }
+
 
 // eat
     // get food at a specific cell for a specific animal
@@ -280,8 +280,14 @@ public class Simulation {
     }
 
         
+// death logic
 
-    public void death(Animal animal) {
+    public void checkForDeath(Animal animal) {
         // remove animal from stage
+        if(animal.movesWithoutFood >= 10) {
+            
+            System.out.println(animal + " died of starvation at " + animal.cell.col + ", " + animal.cell.row);
+            animals.remove(animal);
+        }
     }
 }
