@@ -23,15 +23,11 @@ public class Simulation {
         animals.add(new Rabbit(grid.cells[2][2]));
         animals.add(new Fox(grid.cells[12][12]));
 
-        animals.add(new Rabbit(grid.cells[10][10]));
+        animals.add(new Rabbit(grid.cells[2][2]));
         lettuce.add(new Lettuce(grid.cells[4][4]));
 
         moveAnimal(animals.get(0));
-        moveAnimal(animals.get(0));
 
-
-        moveAnimal(animals.get(1));
-        moveAnimal(animals.get(1));
         
 
     }
@@ -53,10 +49,20 @@ public class Simulation {
     public void moveAnimal(Animal animal) {
         List<Cell> possibleMoves = getNeighbors(animal.cell);
 
+        //check for food in neighboring cells or partner in same cell
         Cell foodCell = detectFood(animal);
-        // if statement for all the targetted movement toward food
+        Animal partner = checkForPartner(animal);
 
-        if(foodCell != null) {
+        // if statement for all the targetted movement toward food
+            // because it affects how animal moves 
+
+        if(partner != null) {   // checks for reproduction
+            reproduce(animal, partner);
+
+            //increment moves
+            animal.movesWithoutFood++;
+
+        } else if(foodCell != null) {  // checks food
             
             Cell targetCell = bestMove(possibleMoves, foodCell);
 
@@ -65,21 +71,33 @@ public class Simulation {
             if(targetCell == foodCell) {
                 Object food = getFoodAt(foodCell, animal);
                 eat(animal, food);
+            } else {
+
+                //increment up if not eaten
+                animal.movesWithoutFood++;
             }
+
+            // increment moves
+            animal.movesSinceReproduction++;
 
             System.out.println("target cell is " + targetCell.col + ", " + targetCell.row);
             System.out.println("move to " + foodCell.col + ", " + foodCell.row);
 
-        } else {
-            //the random movement will be part of the else statement if there is no food in the neighboring cells
-        // random movement to a neighboring cell that is not occupied by another animal
-        int randomCellIndex = (int) (Math.random() * possibleMoves.size());
-        Cell targetCell = possibleMoves.get(randomCellIndex);
 
-        animal.move(targetCell);
+        } else {   // random movement to a neighboring cell 
+            int randomCellIndex = (int) (Math.random() * possibleMoves.size());
+            Cell targetCell = possibleMoves.get(randomCellIndex);
+            
+            animal.move(targetCell);
 
-        System.out.println("random cell is " + targetCell.col + ", " + targetCell.row);
+            // increment moves
+            animal.movesSinceReproduction++;
+            animal.movesWithoutFood++;
+
+            System.out.println("random cell is " + targetCell.col + ", " + targetCell.row);
         }
+
+        
         
     }
 
@@ -134,8 +152,7 @@ public class Simulation {
     }
 
 // eat
-    // detect food in neighboring cells
-
+    // get food at a specific cell for a specific animal
     private Object getFoodAt(Cell cell, Animal animal) {
         // check if there is food in the cell
         for(int i = 0; i < lettuce.size(); i++) {
@@ -154,10 +171,9 @@ public class Simulation {
         return null;
     }
 
-    public Cell detectFood(Animal animal) {
-
-        // check if there is food in neighboring cells
+    // check if there is food in neighboring cells
         // if there is food, move towards that cell
+    public Cell detectFood(Animal animal) {
 
         Cell current = animal.cell;
 
@@ -185,8 +201,9 @@ public class Simulation {
     }
 
 
+    // remove food from stage
     public void eat(Animal animal, Object food) {
-        // remove food from stage
+        
         if(food == null) {
             return;
         }
@@ -194,9 +211,18 @@ public class Simulation {
         if(animal.canEat(food)) {
             if(food instanceof Lettuce) {
                 lettuce.remove((Lettuce) food);
+
+                // reset moves without food since animal has eaten
+                animal.movesWithoutFood = 0;
+                
                 System.out.println(animal + " ate lettuce at " + ((Lettuce) food).cell.col + ", " + ((Lettuce) food).cell.row);
+            
             } else if(food instanceof Animal) {
                 animals.remove((Animal) food);
+
+                // reset moves without food since animal has eaten
+                animal.movesWithoutFood = 0;
+                
                 System.out.println(animal + " ate " + food + " at " + ((Animal) food).cell.col + ", " + ((Animal) food).cell.row);
             }
         }
@@ -205,11 +231,55 @@ public class Simulation {
 
 
 // reproduction logic
-    public void reproduce(Animal animal) {
+    public void reproduce(Animal animal1, Animal animal2) {
         // add new animal to stage 
-        // when animal moves on reproduction turn, leaves behind new animal in old cell
+        Cell oldCell = animal1.cell;
+        List<Cell> possibleMoves = getNeighbors(oldCell);
+        int randomCellIndex;
+        Cell targetCell;
+
+        //move parents away
+
+        randomCellIndex = (int) (Math.random() * possibleMoves.size());
+        targetCell = possibleMoves.get(randomCellIndex);
+        animal1.move(targetCell);
+
+        randomCellIndex = (int) (Math.random() * possibleMoves.size());
+        targetCell = possibleMoves.get(randomCellIndex);        
+        animal2.move(targetCell);
+
+        Animal newAnimal = animal1.reproduce(oldCell);
+        animals.add(newAnimal);
+
+        // reset moves since reproduction for both parents
+        animal1.movesSinceReproduction = 0;
+        animal2.movesSinceReproduction = 0;
+
+        System.out.println(animal1 + " and " + animal2 + " reproduced at " + oldCell.col + ", " + oldCell.row);
+
     }
 
+
+    //helper to see if partner exists 
+    public Animal checkForPartner(Animal animal) {
+
+        for(int i = 0; i < animals.size(); i++) {
+
+            Animal animal2 = animals.get(i);
+
+            if(animal != animal2 && 
+                animal.cell == animal2.cell &&
+                animal.getClass() == animal2.getClass() &&
+                animal.movesSinceReproduction >= 5 && 
+                animal2.movesSinceReproduction >= 5) {
+
+                return animal2;
+            }
+        }
+        return null;
+    }
+
+        
 
     public void death(Animal animal) {
         // remove animal from stage

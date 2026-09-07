@@ -7,8 +7,8 @@ public abstract class Animal implements Move, Eat {
     Color color;
     List<Polygon> display;
     Cell cell;
-    int movesWithoutFood;
-    int movesSinceReproduction;
+    int movesWithoutFood = 0;
+    int movesSinceReproduction = 0;
 
     public Animal(Cell cell) {
         this.cell = cell;
