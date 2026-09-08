@@ -28,8 +28,14 @@ public class Simulation {
         animals.add(new Rabbit(grid.cells[2][2]));
         animals.add(new Fox(grid.cells[12][12]));
 
-        animals.add(new Rabbit(grid.cells[7][2]));
-        lettuce.add(new Lettuce(grid.cells[4][4]));
+        animals.add(new Rabbit(grid.cells[5][4]));
+        // lettuce.add(new Lettuce(grid.cells[4][4]));
+
+        //tests
+        moveAnimal(animals.get(2));
+        moveAnimal(animals.get(2));
+
+
         
     }
 
@@ -51,17 +57,23 @@ public class Simulation {
         List<Cell> possibleMoves = getNeighbors(animal.cell);
 
         //check for food in neighboring cells or partner in same cell
-        Cell foodCell = detectFood(animal);
-        Animal partner = checkForPartner(animal);
+        Cell foodCell = findFood(animal);
+        Cell partner = findPartner(animal);
 
-        // if statement for all the targetted movement toward food
-            // because it affects how animal moves 
+        System.out.println(partner);
+
+        // if statement for all the targetted movement
 
         if(partner != null) {   // checks for reproduction
-            reproduce(animal, partner);
+            Cell targetCell = bestMove(possibleMoves, partner);
+            animal.move(targetCell);
 
-            //increment moves
-            animal.movesWithoutFood++;
+            if(targetCell == partner) {
+                reproduce(animal, getAnimal(partner, animal));  
+            } else {
+                //increment up if not reproduced
+                animal.movesSinceReproduction++;
+            }
 
         } else if(foodCell != null) {  // checks food
             
@@ -155,7 +167,7 @@ public class Simulation {
 
 
 // eat
-    // get food at a specific cell for a specific animal
+    // get food at specific cell from relevant EntityList for given animal
     private Object getFoodAt(Cell cell, Animal animal) {
         // check if there is food in the cell
         for(int i = 0; i < lettuce.size(); i++) {
@@ -174,66 +186,9 @@ public class Simulation {
         return null;
     }
 
-//plant growth logic
-    public void growLettuce() {
-
-        boolean gridFull = true;
-
-        // check if there is at least one empty cell in the grid
-        for(int col = 0; col < grid.cells.length; col++) {
-            for(int row = 0; row < grid.cells[col].length; row++) {
-                Cell cell = grid.cells[col][row];
-
-                // check if the cell is occupied
-                boolean cellOccupied = isCellOccupied(cell);
-
-                // if the cell is not occupied, add new lettuce to that cell
-                if(!cellOccupied) {
-                    gridFull = false;
-                    break;
-                }
-            }
-        }
-
-        while(!gridFull) {
-
-            // randomly select a cell in the grid
-            int col = (int) (Math.random() * grid.cells.length);
-            int row = (int) (Math.random() * grid.cells[col].length);
-            Cell cell = grid.cells[col][row];
-
-            // check if cell is occupied
-            boolean cellOccupied = isCellOccupied(cell);
-
-            // if the cell is not occupied, add new lettuce to that cell
-            if(!cellOccupied) {
-                lettuce.add(new Lettuce(cell));
-                turnsSinceLastLettuceGrowth = 0;
-                return;
-            }
-        }
-    }
-
-    private boolean isCellOccupied(Cell cell) {
-
-        for(int i = 0; i < lettuce.size(); i++) {
-            if(lettuce.get(i).cell == cell) {
-                return true;
-            }
-        }
-
-        for(int i = 0; i < animals.size(); i++) {
-            if(animals.get(i).cell == cell) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     // check if there is food in neighboring cells
         // if there is food, move towards that cell
-    public Cell detectFood(Animal animal) {
+    public Cell findFood(Animal animal) {
 
         Cell current = animal.cell;
 
@@ -293,6 +248,68 @@ public class Simulation {
 
 
 
+
+//plant growth logic
+    public void growLettuce() {
+
+        boolean gridFull = true;
+
+        // check if there is at least one empty cell in the grid
+        for(int col = 0; col < grid.cells.length; col++) {
+            for(int row = 0; row < grid.cells[col].length; row++) {
+                Cell cell = grid.cells[col][row];
+
+                // check if the cell is occupied
+                boolean cellOccupied = isCellOccupied(cell);
+
+                // if the cell is not occupied, add new lettuce to that cell
+                if(!cellOccupied) {
+                    gridFull = false;
+                    break;
+                }
+            }
+        }
+
+        while(!gridFull) {
+
+            // randomly select a cell in the grid
+            int col = (int) (Math.random() * grid.cells.length);
+            int row = (int) (Math.random() * grid.cells[col].length);
+            Cell cell = grid.cells[col][row];
+
+            // check if cell is occupied
+            boolean cellOccupied = isCellOccupied(cell);
+
+            // if the cell is not occupied, add new lettuce to that cell
+            if(!cellOccupied) {
+                lettuce.add(new Lettuce(cell));
+                turnsSinceLastLettuceGrowth = 0;
+                return;
+            }
+        }
+    }
+
+    private boolean isCellOccupied(Cell cell) {
+
+        for(int i = 0; i < lettuce.size(); i++) {
+            if(lettuce.get(i).cell == cell) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < animals.size(); i++) {
+            if(animals.get(i).cell == cell) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    
+
+
+
 // reproduction logic
     public void reproduce(Animal animal1, Animal animal2) {
         // add new animal to stage 
@@ -323,24 +340,54 @@ public class Simulation {
     }
 
 
-    // helper to see if partner exists 
-    public Animal checkForPartner(Animal animal) {
+    // helper to see if partner exists at cell
+    public Cell findPartner(Animal animal) {
 
-        for(int i = 0; i < animals.size(); i++) {
+        Cell current = animal.cell;
 
-            Animal animal2 = animals.get(i);
+        for(int col = current.col - 3; col <= current.col + 3; col++) {
+            for(int row = current.row - 3; row <= current.row + 3; row++) {
 
-            if(animal != animal2 && 
-                animal.cell == animal2.cell &&
-                animal.getClass() == animal2.getClass() &&
-                animal.movesSinceReproduction >= animal.reproductionThreshold &&
-                animal2.movesSinceReproduction >= animal2.reproductionThreshold){
+                //Skip current
+                if(col == current.col && row == current.row) {
+                    continue;
+                }
 
-                return animal2;
-            }     
+                //make sure within grid brounds
+                if(col >= 0 && col < grid.cells.length && 
+                    row >= 0 && row < grid.cells[col].length) {
+                    
+                    Animal mate = getAnimal(grid.cells[col][row], animal);
+
+                        System.out.println("mate is " + mate);
+
+                    if(mate != null &&
+                        animal != mate && 
+                        animal.getClass() == mate.getClass() &&
+                        animal.movesSinceReproduction >= animal.reproductionThreshold &&
+                        mate.movesSinceReproduction >= mate.reproductionThreshold
+                    ){
+                        return grid.cells[col][row];
+                    }
+                }
+            }
         }
         return null;
+
     }
+
+    // get animal in cell
+    public Animal getAnimal(Cell cell, Animal animal){
+        for(int i = 0; i < animals.size(); i++) {
+            Animal select = animals.get(i);
+            if(select.getClass() == animal.getClass()){
+                return select;
+            }
+        }
+        
+        return null;
+    }
+
 
         
 // death logic
@@ -355,11 +402,10 @@ public class Simulation {
     }
 
     public void removeDeadAnimals() {
-        for(int i = 0; i < animals.size(); i++) {
+        for(int i = animals.size() - 1; i >= 0; i--) {
             Animal animal = animals.get(i);
             if(!animal.isAlive) {
                 animals.remove(animal);
-                i--; // adjust index after removal
             }
         }
     }
