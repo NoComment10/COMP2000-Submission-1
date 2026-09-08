@@ -29,7 +29,7 @@ public class Fox extends Animal {
         display.add(ear2);
     }
 
-// move interface
+    // move fox to target cell
     @Override
     public void move(Cell target) {
     

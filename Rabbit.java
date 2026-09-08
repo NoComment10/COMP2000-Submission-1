@@ -32,7 +32,7 @@ public class Rabbit extends Animal {
     }
 
 // move interface
-    // rabbit will randomly move to a cell that is not occupied by another rabbit
+    // move rabbit to target cell
     @Override
     public void move(Cell target) {
         
