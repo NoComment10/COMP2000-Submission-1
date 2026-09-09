@@ -11,12 +11,7 @@ public class Simulation {
     
     // lettuce information
     int lettuceGrowthRate = 3; // number of turns it takes to grow
-    int turnsSinceLastLettuceGrowth = 0;
-
-    // add animals and plants to the stage
-    // controls reproduction and movement of animals and plants
-    // controls the death of animals
-
+    int turnsSinceLastLettuceGrowth = 0; 
 
     public Simulation(){
         grid = new Grid();
@@ -24,14 +19,21 @@ public class Simulation {
         animals = new EntityList<Animal>();
 
         // intial addition of animals and plants to the stage
-            // for example -> nothing concrete yet
-
+        // animals added in unorganised pattern so that there is no early turn predator or prey advantage
         animals.add(new Fox(grid.cells[12][12]));
+        animals.add(new Rabbit(grid.cells[14][7]));
         animals.add(new Rabbit(grid.cells[2][2]));
         animals.add(new Fox(grid.cells[8][5]));
-        lettuce.add(new Lettuce(grid.cells[4][4]));
-        animals.add(new Rabbit(grid.cells[6][6]));
+        animals.add(new Rabbit(grid.cells[9][6]));
+        animals.add(new Rabbit(grid.cells[4][7]));
+        animals.add(new Fox(grid.cells[10][2]));
+        animals.add(new Fox(grid.cells[4][1]));
+        animals.add(new Rabbit(grid.cells[6][14]));
 
+        // lettuce added to board
+        lettuce.add(new Lettuce(grid.cells[4][4]));
+        lettuce.add(new Lettuce(grid.cells[2][14]));
+        lettuce.add(new Lettuce(grid.cells[10][7]));
     }
 
 
@@ -55,7 +57,7 @@ public class Simulation {
         Cell foodCell = findFood(animal);
         Cell partnerCell = findPartner(animal);
 
-        // if statement for all the targetted movement
+        // if statement for all targetted movement
 
         if(partnerCell != null) {   // checks for reproduction
             
@@ -101,7 +103,7 @@ public class Simulation {
                 animal.movesWithoutFood++;
             }
 
-            // increment moves
+            // increment up reproduction counter
             animal.movesSinceReproduction++;
 
             System.out.println(animal + "moved to " + foodCell.col + ", " + foodCell.row);
@@ -442,7 +444,7 @@ public class Simulation {
             }
         }
 
-        // remov all animals that died in current turn
+        // remove all animals that died in current turn
         removeDeadAnimals();
   
     }
